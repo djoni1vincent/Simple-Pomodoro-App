@@ -1,6 +1,6 @@
 import math
-
 from tkinter import *
+
 # ---------------------------- CONSTANTS ------------------------------- #
 PINK = "#e2979c"
 RED = "#e7305b"
@@ -12,57 +12,74 @@ SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 reps = 0
 timer_l = None
+is_running = False
+current_count = 0
 
 # ---------------------------- TIMER RESET ------------------------------- #]
 def reset():
-    global reps
+    global reps, is_running, current_count
     reps = 0
+    is_running = False
+    current_count = 0
     window.after_cancel(timer_l)
     canvas.itemconfig(timer_text, text="00:00")
     timer_label.config(text="Pomodoro", fg=GREEN)
-
-
+    start.config(text="Start")
+    checkmark.config(text="")
 
 # ---------------------------- TIMER MECHANISM ------------------------------- #
 
 def timer_start():
-    global reps
-    reps += 1
-
+    global reps, is_running, current_count
     short_break_s = SHORT_BREAK_MIN * 60
     long_break_s = LONG_BREAK_MIN * 60
     work_s = WORK_MIN * 60
 
+    if is_running:
+        is_running = False
+        start.config(text="Start")
+        window.after_cancel(timer_l)
+        return
+
+    is_running = True
+    start.config(text="Stop")
+
+    if current_count > 0:
+        count_down(current_count)
+        return
+
+    reps += 1
+
     if reps % 8 == 0:
-        count_down(long_break_s)
+        current_count = LONG_BREAK_MIN * 60
         timer_label.config(text="Break", fg=GREEN)
-
     elif reps % 2 == 0:
-        count_down(short_break_s)
+        current_count = SHORT_BREAK_MIN * 60
         timer_label.config(text="Break", fg=PINK)
-        if len(checkmark["text"]) == 4:
-              checkmark['text'] = ""
         checkmark['text'] += "✔"
-
     else:
-        count_down(work_s)
+        current_count = WORK_MIN * 60
         timer_label.config(text="Work", fg=RED)
+
+    count_down(current_count)
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 
 def count_down(count):
-    count_min = math.floor(count / 60)
-    count_sec = count % 60
-    if count_sec < 10:
-        count_sec = f"0{count_sec}"
+    global timer_l, current_count
 
-    canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
-    if count > 0:
-        global timer_l
+    current_count = count
+
+    min = count // 60
+    sec = count % 60
+    canvas.itemconfig(timer_text, text=f"{min:02}:{sec:02}")
+
+    if count > 0 and is_running:
         timer_l = window.after(1000, count_down, count - 1)
-    else:
+    elif count == 0:
+        current_count = 0
         timer_start()
-        # if reps % 2 == 0:
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
