@@ -2,6 +2,9 @@
 
 A simple time management application built with Python and Tkinter that implements the Pomodoro Technique.
 
+
+![pomodoroapp img](https://github.com/djoni1vincent/Simple-Pomodoro-App/blob/0115e2b822590893b4d73fb5fc59f8b103901e24/screenshot-2026-02-11_08-59-38.png)
+
 ## Overview
 
 This project is part of the **100 Days of Code™: The Complete Python Pro Bootcamp** on Udemy.
